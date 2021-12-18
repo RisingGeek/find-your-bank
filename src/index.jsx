@@ -1,13 +1,13 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from './App';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
+import AllRoutes from './routes/routes';
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <AllRoutes />
   </React.StrictMode>,
   document.getElementById('root'),
 );
