@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../axios';
+import { getLSItem, setLSItem } from '../utils/storage';
 import filters from './filters.json';
 import Loader from './loader/Loader';
 import Show from './Show';
 
 const BankList = () => {
-  const [banks, setBanks] = useState([]);
-  const [filteredBanks, setFilteredBanks] = useState([]);
+  const banks = getLSItem('banks');
+
+  const [filteredBanks, setFilteredBanks] = useState(banks || []);
   const [currPage, setCurrPage] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [isLoading, setIsLoading] = useState(true);
@@ -16,6 +19,7 @@ const BankList = () => {
     searchQuery: '',
   });
   const [error, setError] = useState(undefined);
+  const navigate = useNavigate();
 
   const getBanks = () => {
     setIsLoading(true);
@@ -25,7 +29,8 @@ const BankList = () => {
       },
     }).then(({ data }) => {
       setIsLoading(false);
-      setBanks(data);
+      setLSItem('banks', data, 5);
+      setLSItem('city', filterItems.city, 5);
       setFilteredBanks(data);
     }).catch((err) => {
       setIsLoading(false);
@@ -34,7 +39,11 @@ const BankList = () => {
   };
 
   useEffect(() => {
-    getBanks();
+    if (!banks || getLSItem('city') !== filterItems.city) {
+      getBanks();
+    } else {
+      setIsLoading(false);
+    }
   }, [filterItems.city]);
 
   const getPaginatedData = () => {
@@ -139,7 +148,7 @@ const BankList = () => {
 
       {isLoading && <Loader />}
 
-      <Show isVisible={error}>
+      <Show isVisible={!!error}>
         <p className="text-danger">{error}</p>
       </Show>
 
@@ -163,7 +172,7 @@ const BankList = () => {
                     } = bank;
 
                     return (
-                      <tr key={ifsc}>
+                      <tr key={ifsc} onClick={() => navigate(`/bank-details/${ifsc}`)} style={{ cursor: 'pointer' }}>
                         <td>{bankName}</td>
                         <td>{ifsc}</td>
                         <td>{branch}</td>

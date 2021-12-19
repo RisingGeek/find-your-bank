@@ -7,7 +7,7 @@ const SideBar = () => (
       <Link to="/all-banks">All Banks</Link>
     </li>
     <li>
-      <Link to="/all-banks">Favorites</Link>
+      <Link to="/favorites">Favorites</Link>
     </li>
   </ul>
 );
