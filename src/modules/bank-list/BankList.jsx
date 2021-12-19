@@ -145,7 +145,7 @@ const BankList = () => {
                     } = bank;
 
                     return (
-                      <tr key={ifsc} onClick={() => navigate(`/bank-details/${ifsc}`)} style={{ cursor: 'pointer' }}>
+                      <tr key={ifsc} className={styles.listRow} onClick={() => navigate(`/bank-details/${ifsc}`)}>
                         <td>{bankName}</td>
                         <td>{ifsc}</td>
                         <td>{branch}</td>

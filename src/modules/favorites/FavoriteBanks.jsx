@@ -1,8 +1,11 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { getLSItem, LS_KEYS } from '../../utils/storage';
+import Show from '../Show';
 
 const FavoriteBanks = () => {
   const favorites = getLSItem(LS_KEYS.FAVORITES) || [];
+  const navigate = useNavigate();
   return (
     <div>
       <h1>Favorite Banks</h1>
@@ -23,7 +26,7 @@ const FavoriteBanks = () => {
                 bank_name: bankName, ifsc, branch, bank_id: bankId, address,
               } = favorite;
               return (
-                <tr>
+                <tr key={ifsc} onClick={() => navigate(`/bank-details/${ifsc}`)} style={{ cursor: 'pointer' }}>
                   <td>{bankName}</td>
                   <td>{ifsc}</td>
                   <td>{branch}</td>
@@ -32,6 +35,13 @@ const FavoriteBanks = () => {
                 </tr>
               );
             })}
+            <Show isVisible={favorites.length === 0}>
+              <tr>
+                <td colSpan={5}>
+                  <h4 className="text-center text-danger">No favorite banks added yet</h4>
+                </td>
+              </tr>
+            </Show>
           </tbody>
         </table>
       </div>

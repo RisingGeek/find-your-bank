@@ -2,6 +2,10 @@
     color: #00d09c;
 }
 
+.listRow {
+    cursor: pointer;
+}
+
 .pagination {
     justify-content: flex-end;
 }
