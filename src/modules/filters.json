@@ -1,0 +1,15 @@
+{
+    "cities": [
+        {"text": "CHANDIGARH", "value": "CHANDIGARH"}, 
+        {"text": "MUMBAI", "value": "MUMBAI"}, 
+        {"text": "DELHI", "value": "DELHI"}, 
+        {"text": "BANGALORE", "value": "BANGALORE"}, 
+        {"text": "PUNE", "value": "PUNE"}
+    ],
+    "categories": [
+        {"text": "IFSC", "value": "ifsc"}, 
+        {"text": "Branch", "value": "branch"}, 
+        {"text": "Bank Name", "value": "bank_name"},
+        {"text": "Bank ID", "value": "bank_id"}
+    ]
+}
