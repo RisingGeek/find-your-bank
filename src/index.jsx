@@ -7,7 +7,9 @@ import AllRoutes from './routes/routes';
 
 ReactDOM.render(
   <React.StrictMode>
-    <AllRoutes />
+    <div className="py-4">
+      <AllRoutes />
+    </div>
   </React.StrictMode>,
   document.getElementById('root'),
 );

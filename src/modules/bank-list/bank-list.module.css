@@ -1,0 +1,13 @@
+.thead {
+    color: #00d09c;
+}
+
+.pagination {
+    justify-content: flex-end;
+}
+
+@media (max-width: 425px) {
+    .pagination {
+        justify-content: flex-start;
+    }
+}

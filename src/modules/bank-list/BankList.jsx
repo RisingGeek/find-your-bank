@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axiosInstance from '../axios';
-import { getLSItem, setLSItem } from '../utils/storage';
-import filters from './filters.json';
-import Loader from './loader/Loader';
-import Show from './Show';
+import axiosInstance from '../../axios';
+import { getLSItem, LS_KEYS, setLSItem } from '../../utils/storage';
+import filters from '../filters.json';
+import Loader from '../loader/Loader';
+import Show from '../Show';
+import styles from './bank-list.module.css';
+import BankFilters from './BankFilters';
+import Pagination from './Pagination';
 
 const BankList = () => {
-  const banks = getLSItem('banks');
+  const banks = getLSItem(LS_KEYS.BANKS);
 
   const [filteredBanks, setFilteredBanks] = useState(banks || []);
   const [currPage, setCurrPage] = useState(0);
@@ -21,6 +24,7 @@ const BankList = () => {
   const [error, setError] = useState(undefined);
   const navigate = useNavigate();
 
+  // Get All banks API call
   const getBanks = () => {
     setIsLoading(true);
     axiosInstance.get('/banks', {
@@ -29,8 +33,8 @@ const BankList = () => {
       },
     }).then(({ data }) => {
       setIsLoading(false);
-      setLSItem('banks', data, 5);
-      setLSItem('city', filterItems.city, 5);
+      setLSItem(LS_KEYS.BANKS, data, 5);
+      setLSItem(LS_KEYS.CITY, filterItems.city);
       setFilteredBanks(data);
     }).catch((err) => {
       setIsLoading(false);
@@ -38,31 +42,36 @@ const BankList = () => {
     });
   };
 
+  // Call API if cache expires or city changes
   useEffect(() => {
-    if (!banks || getLSItem('city') !== filterItems.city) {
+    if (!banks || getLSItem(LS_KEYS.CITY) !== filterItems.city) {
       getBanks();
     } else {
       setIsLoading(false);
     }
   }, [filterItems.city]);
 
+  // Get banks for current page
   const getPaginatedData = () => {
     if (filteredBanks.length === 0) {
       return { bankData: [], start: 0, end: 0 };
     }
     const startIdx = currPage * pageSize;
-    const endIdx = startIdx + pageSize;
+    const endIdx = Math.min(filteredBanks.length, startIdx + pageSize);
     return { bankData: filteredBanks.slice(startIdx, endIdx), start: startIdx, end: endIdx };
   };
 
+  // Go to previous page
   const handlePreviousPage = () => {
     setCurrPage(currPage - 1);
   };
 
+  // Go to next page
   const handleNextPage = () => {
     setCurrPage(currPage + 1);
   };
 
+  // Changes number of banks displayed on 1 page & defaults to page 0
   const handleChangePageSize = (event) => {
     const newPageSize = parseInt(event.target.value, 10);
     setPageSize(newPageSize);
@@ -70,14 +79,19 @@ const BankList = () => {
     setCurrPage(0);
   };
 
+  // Update filter items
   const handleFilter = (item) => {
     setFilterItems({ ...filterItems, ...item });
   };
 
+  // Filters banks on the basis of city, category and search query
   const getFilteredData = (searchQuery) => {
     const filteredData = banks.filter((bank) => {
       const { city } = bank;
+      // Match city
       const isCityFilter = !filterItems.city || filterItems.city === city;
+
+      // Check if category is selected and user has entered search query
       if (filterItems.category !== 'DEFAULT' && searchQuery) {
         const isPresent = filters.categories.some((category) => (
           filterItems.category === category.value
@@ -99,52 +113,11 @@ const BankList = () => {
 
   return (
     <>
-      <div className="row">
-        <div className="col-sm-6">
-          <h3>All Banks</h3>
-        </div>
-        <div className="col-sm-2">
-          <select
-            className="form-select"
-            aria-label="Select City"
-            value={filterItems.city}
-            onChange={(event) => handleFilter({ city: event.target.value, searchQuery: '' })}
-          >
-            <option disabled>Select City</option>
-            {filters.cities.map((city) => (
-              <option
-                key={city.value}
-                value={city.value}
-              >
-                {city.text}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="col-sm-2">
-          <select
-            className="form-select"
-            aria-label="Select Category"
-            value={filterItems.category}
-            onChange={(event) => handleFilter({ category: event.target.value, searchQuery: '' })}
-          >
-            <option value="DEFAULT" disabled>Select Category</option>
-            {filters.categories.map((category) => (
-              <option key={category.value} value={category.value}>{category.text}</option>
-            ))}
-          </select>
-        </div>
-        <div className="col-sm-2">
-          <input
-            type="text"
-            className="form-control"
-            value={filterItems.searchQuery}
-            onChange={(event) => getFilteredData(event.target.value)}
-            disabled={filterItems.category === 'DEFAULT'}
-            placeholder="Search"
-          />
-        </div>
-      </div>
+      <BankFilters
+        filterItems={filterItems}
+        handleFilter={handleFilter}
+        getFilteredData={getFilteredData}
+      />
 
       {isLoading && <Loader />}
 
@@ -154,8 +127,8 @@ const BankList = () => {
 
       <Show isVisible={!isLoading}>
         <div className="table-responsive">
-          <table className="table">
-            <thead>
+          <table className="table table-striped">
+            <thead className={styles.thead}>
               <tr>
                 <th scope="col">Bank</th>
                 <th scope="col">IFSC</th>
@@ -191,24 +164,13 @@ const BankList = () => {
           </table>
         </div>
         <Show isVisible={filteredBanks.length > 0}>
-          <div className="d-flex justify-content-end">
-            <div className="d-flex align-items-center">
-              <span className="mx-2">Rows per page:</span>
-              <div className="form-group">
-                <input
-                  type="number"
-                  className="form-control w-50"
-                  value={pageSize}
-                  onChange={handleChangePageSize}
-                />
-              </div>
-            </div>
-            <div className="d-flex align-items-center">
-              <button type="button" className="btn btn-light" onClick={handlePreviousPage}>&lt;</button>
-              <div className="px-2">{paginationText}</div>
-              <button type="button" className="btn btn-light" onClick={handleNextPage}>&gt;</button>
-            </div>
-          </div>
+          <Pagination
+            pageSize={pageSize}
+            handleChangePageSize={handleChangePageSize}
+            handlePreviousPage={handlePreviousPage}
+            handleNextPage={handleNextPage}
+            paginationText={paginationText}
+          />
         </Show>
       </Show>
     </>

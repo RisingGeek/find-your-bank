@@ -1,5 +1,6 @@
 import propTypes from 'prop-types';
 
+// Helper component to show / hide children according to isVisible prop
 const Show = (props) => {
   const { isVisible, children } = props;
 

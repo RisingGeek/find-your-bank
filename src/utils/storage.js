@@ -1,3 +1,9 @@
+const LS_KEYS = {
+  BANKS: 'BANKS',
+  CITY: 'CITY',
+  FAVORITES: 'FAVORITES',
+};
+
 // Sets an item to localStorage
 // expiry time is in minutes
 const setLSItem = (key, value, expiry) => {
@@ -24,4 +30,4 @@ const getLSItem = (key) => {
   return item.value;
 };
 
-export { setLSItem, getLSItem };
+export { LS_KEYS, setLSItem, getLSItem };

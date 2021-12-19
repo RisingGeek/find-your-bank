@@ -1,13 +1,13 @@
 import React from 'react';
-import { getLSItem } from '../../utils/storage';
+import { getLSItem, LS_KEYS } from '../../utils/storage';
 
 const FavoriteBanks = () => {
-  const favorites = getLSItem('favorites') || [];
+  const favorites = getLSItem(LS_KEYS.FAVORITES) || [];
   return (
     <div>
       <h1>Favorite Banks</h1>
       <div className="table-responsive">
-        <table className="table">
+        <table className="table table-striped">
           <thead>
             <tr>
               <th scope="col">Bank</th>

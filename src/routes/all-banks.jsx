@@ -1,11 +1,8 @@
 import React from 'react';
-import BankList from '../modules/BankList';
-import PageLayout from '../modules/PageLayout';
+import BankList from '../modules/bank-list/BankList';
 
 const AllBanks = () => (
-  <PageLayout>
-    <BankList />
-  </PageLayout>
+  <BankList />
 );
 
 export default AllBanks;
